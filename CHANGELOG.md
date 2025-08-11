@@ -1,5 +1,8 @@
 # Changelog
 
+## [5.0.0] - 2025-08-11
+- RELEASE: First rsync release
+
 ## [4.0.0] - 2025-08-11
 - RELEASE: Final bash version
 

@@ -4,12 +4,22 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:-$HOME/.local/bin}"
-REPO_URL="https://github.com/johnvilsack/dotfiler"
 
 echo "Installing dotfiler to $INSTALL_DIR..."
 
 # Copy files
-cp dotfiler "$INSTALL_DIR/" && cp -rf dotfiler-lib "$INSTALL_DIR/"
+cp dotfiler "$INSTALL_DIR/" && cp -rf dotfiler_lib "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/dotfiler"
 
-echo "dotfiler installed!"
+echo "✓ dotfiler installed!"
+echo ""
+
+# Run interactive configuration
+# echo "Starting interactive configuration..."
+# echo ""
+# if [[ -x "$INSTALL_DIR/dotfiler" ]]; then
+#     "$INSTALL_DIR/dotfiler" config
+# else
+#     echo "⚠ Could not run dotfiler config automatically"
+#     echo "Please run 'dotfiler config' to complete setup"
+# fi

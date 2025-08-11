@@ -1,139 +1,107 @@
 #!/usr/bin/env bash
-# dotfiler - Main executable
+# dotfiler-ng - Simple dotfiles management with rsync
+# Compatible with bash 3.2+ (macOS default)
 
-set -euo pipefail
+# Program info
+PROGRAM_NAME="dotfiler"
+VERSION="5.0.0"
 
-# Configuration files
-CONFIG_DIR="$HOME/.config/dotfiler"
-TRACKED_ITEMS="$CONFIG_DIR/tracked.conf"
-IGNORED_ITEMS="$CONFIG_DIR/ignored.conf" 
-DELETED_ITEMS="$CONFIG_DIR/deleted.conf"
-
-# Legacy support (will migrate automatically)
-TRACKEDFOLDERLIST="$CONFIG_DIR/tracked-folders.txt"
-IGNORELIST="$CONFIG_DIR/ignore-list.txt"
-
-# Determine script directory and lib path
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB_DIR="$(dirname "$SCRIPT_DIR")/bin/dotfiler-lib"
+# Find library directory
+if [[ -L "$0" ]]; then
+    # Follow symlink
+    SCRIPT_PATH="$(readlink "$0")"
+    LIB_DIR="$(dirname "$SCRIPT_PATH")/dotfiler_lib"
+else
+    # Direct execution
+    SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+    LIB_DIR="$(dirname "$SCRIPT_PATH")/dotfiler_lib"
+fi
 
 # Source library files
 source "$LIB_DIR/common.sh"
-source "$LIB_DIR/add.sh"
-source "$LIB_DIR/remove.sh"
-source "$LIB_DIR/build.sh"
-source "$LIB_DIR/list.sh"
-source "$LIB_DIR/newsync.sh"
-source "$LIB_DIR/sync.sh"
+source "$LIB_DIR/config.sh"
+source "$LIB_DIR/track.sh"
 source "$LIB_DIR/ignore.sh"
 source "$LIB_DIR/delete.sh"
+source "$LIB_DIR/sync.sh"
+source "$LIB_DIR/list.sh"
+source "$LIB_DIR/status.sh"
 
-# Version and metadata
-VERSION="1.0.9"
-PROGRAM_NAME="dotfiler"
+# Initialize configuration
+init_config
 
-# Help function
+# Show help
 show_help() {
     cat << EOF
-$PROGRAM_NAME v$VERSION - Simple dotfiles management
+dotfiler-ng v$VERSION - Simple dotfiles management with rsync
 
-USAGE:
-    $PROGRAM_NAME <command> [options]
+Usage: $PROGRAM_NAME <command> [arguments]
 
-COMMANDS:
-    add, a <file>     Add a file or directory to dotfiles
-    remove, r <file>  Remove a file or directory from dotfiles
-    ignore, i <file>  Add a file or directory to ignore list
-    delete, d <file>  Permanently delete file/directory from all systems (with tombstone)
-    unmanage, u <file> Stop managing a tracked file (exact match only)
-    cleanup, c        Remove all ignored files from repository
-    build, b [--repo-first]  Build dotfiles by linking all tracked files
-                                 --repo-first: Skip sync, build from repo only (for fresh installs)
-    sync, s           Link all dotfiles to their destinations
-    list, l           List all tracked dotfiles
-    version           Show version information
-    help, -h, --help  Show this help message
+Commands:
+  track <path>        Add file/directory to tracking (alias: add)
+  ignore <pattern>    Add pattern to ignore list
+  delete <path>       Delete and tombstone a tracked item
+  remove <path>       Remove from tracking without deletion
+  sync                Sync tracked items between filesystem and repository
+  sync --repo-first   Fresh install mode - repository overwrites filesystem
+  list                List all tracked items
+  status              Show configuration and sync status
+  help                Show this help message
 
-EXAMPLES:
-    $PROGRAM_NAME add .zshrc
-    $PROGRAM_NAME add ~/.config/nvim
-    $PROGRAM_NAME ignore .DS_Store
-    $PROGRAM_NAME ignore ~/.config/sensitive
-    $PROGRAM_NAME delete ~/.config/unwanted-app
-    $PROGRAM_NAME unmanage ~/.config/nvim
-    $PROGRAM_NAME cleanup
-    $PROGRAM_NAME list
-    $PROGRAM_NAME sync
-    $PROGRAM_NAME build
-    $PROGRAM_NAME build --repo-first
+Configuration:
+  Config files are stored in: ~/.config/dotfiler/
+  Repository path: ${REPO_PATH:-\$DOTFILESPATH or ~/github/dotfiles}
 
-ENVIRONMENT:
-    DOTFILESPATH
-    TRACKEDFOLDERLIST
+Examples:
+  $PROGRAM_NAME track ~/.zshrc
+  $PROGRAM_NAME track ~/.config/nvim
+  $PROGRAM_NAME ignore "*.log"
+  $PROGRAM_NAME sync
+  $PROGRAM_NAME delete ~/.config/old-app
 
-For more information, visit: https://github.com/johnvilsack/dotfiler
 EOF
 }
 
-# Main CLI router
+# Main command dispatcher
 main() {
+    local cmd="${1:-}"
+    shift || true
     
-    # Handle no arguments
-    if [[ $# -eq 0 ]]; then
-        show_help
-        exit 0
-    fi
-    
-    # Parse command
-    case "${1:-}" in
-        "add"|"a")
-            shift
-            cmd_add "$@"
+    case "$cmd" in
+        track|add)
+            cmd_track "$@"
             ;;
-        "build"|"b")
-            shift
-            cmd_build "$@"
-            ;;
-        "list"|"l")
-            cmd_list "$@"
-            ;;
-        "sync"|"s")
-            cmd_sync "$@"
-            ;;
-        "remove"|"r")
-            shift
-            cmd_remove "$@"
-            ;;
-        "ignore"|"i")
-            shift
+        ignore)
             cmd_ignore "$@"
             ;;
-        "delete"|"d")
-            shift
+        delete)
             cmd_delete "$@"
             ;;
-        "cleanup"|"c")
-            cmd_cleanup "$@"
+        remove)
+            cmd_remove "$@"
             ;;
-        "unmanage"|"u")
-            shift
-            cmd_unmanage "$@"
+        sync|build)
+            cmd_sync "$@"
             ;;
-        "version")
+        list)
+            cmd_list "$@"
+            ;;
+        status)
+            cmd_status "$@"
+            ;;
+        help|--help|-h|"")
+            show_help
+            ;;
+        version|--version|-v)
             echo "$PROGRAM_NAME v$VERSION"
             ;;
-        "help"|"-h"|"--help")
-            show_help
-            ;;
         *)
-            log_error "Unknown command: $1"
-            echo ""
-            show_help
+            log_error "Unknown command: $cmd"
+            echo "Run '$PROGRAM_NAME help' for usage information"
             exit 1
             ;;
     esac
 }
 
-# Run main function with all arguments
+# Run main function
 main "$@"
-
