@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.0.0] - 2025-08-11
+- RELEASE: Final bash version
+
 ## [3.0.0] - 2025-08-05
 ### Added
 - **New `delete` command**: Permanent file deletion with cross-system enforcement
