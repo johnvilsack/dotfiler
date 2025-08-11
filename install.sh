@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# install.sh - Install dotfiler-ng
+# install.sh - Install dotfiler
 
 set -euo pipefail
-rm -rf /tmp/dotfiler-ng
+rm -rf /tmp/dotfiler
 
 INSTALL_DIR="${1:-$HOME/.local/bin}"
-REPO_URL="https://github.com/johnvilsack/dotfiler-ng"
+REPO_URL="https://github.com/johnvilsack/dotfiler"
 
-echo "Installing dotfiler-ng to $INSTALL_DIR..."
+echo "Installing dotfiler to $INSTALL_DIR..."
 echo ""
 
 # Clone or download
 if command -v git >/dev/null 2>&1; then
-    git clone "$REPO_URL" /tmp/dotfiler-ng
-    cd /tmp/dotfiler-ng
+    git clone "$REPO_URL" /tmp/dotfiler
+    cd /tmp/dotfiler
 else
     echo "Git not found. Please install git first."
     exit 1
@@ -47,8 +47,8 @@ mkdir -p "$INSTALL_DIR"
 
 # Copy files
 echo "Installing files..."
-cp /tmp/dotfiler-ng/dotfiler "$INSTALL_DIR/"
-cp -rf /tmp/dotfiler-ng/dotfiler_lib "$INSTALL_DIR/"
+cp /tmp/dotfiler/dotfiler "$INSTALL_DIR/"
+cp -rf /tmp/dotfiler/dotfiler_lib "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/dotfiler"
 chmod +x "$INSTALL_DIR/dotfiler_lib"/*.sh
 
@@ -58,7 +58,7 @@ echo "✓ Installed dotfiler_lib to: $INSTALL_DIR/dotfiler_lib/"
 # Get hash of latest commit for update tracking
 DOTFILER_HASH_FILE="$HOME/.local/.dotfiler_ng_last_hash"
 if command -v curl >/dev/null 2>&1; then
-    DOTFILER_CURRENT_HASH=$(curl -s https://api.github.com/repos/johnvilsack/dotfiler-ng/commits/HEAD | grep '"sha"' | head -1 | cut -d'"' -f4 2>/dev/null || echo "unknown")
+    DOTFILER_CURRENT_HASH=$(curl -s https://api.github.com/repos/johnvilsack/dotfiler/commits/HEAD | grep '"sha"' | head -1 | cut -d'"' -f4 2>/dev/null || echo "unknown")
     echo "$DOTFILER_CURRENT_HASH" > "$DOTFILER_HASH_FILE"
     echo "✓ Current commit hash: $DOTFILER_CURRENT_HASH"
 else
@@ -74,10 +74,10 @@ if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
 fi
 
 # Cleanup
-rm -rf /tmp/dotfiler-ng
+rm -rf /tmp/dotfiler
 
 echo ""
-echo "✓ dotfiler-ng installed successfully!"
+echo "✓ dotfiler installed successfully!"
 echo ""
 
 # Run interactive configuration
