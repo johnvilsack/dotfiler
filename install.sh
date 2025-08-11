@@ -7,7 +7,7 @@ rm -rf /tmp/dotfiler
 INSTALL_DIR="${1:-$HOME/.local/bin}"
 REPO_URL="https://github.com/johnvilsack/dotfiler"
 
-echo "Installing dotfiler to $INSTALL_DIR..."
+echo "DOTFILER INSTALLING TO: $INSTALL_DIR..."
 echo ""
 
 # Clone or download
@@ -81,16 +81,16 @@ echo "✓ dotfiler installed successfully!"
 echo ""
 
 # Run interactive configuration
-echo "Starting interactive configuration..."
-echo ""
-if [[ -x "$INSTALL_DIR/dotfiler" ]]; then
-    # Make sure we have the PATH set for this session
-    export PATH="$INSTALL_DIR:$PATH"
-    "$INSTALL_DIR/dotfiler" config
-else
-    echo "⚠ Could not run dotfiler config automatically"
-    echo "Please run 'dotfiler config' to complete setup"
-fi
+# echo "Starting interactive configuration..."
+# echo ""
+# if [[ -x "$INSTALL_DIR/dotfiler" ]]; then
+#     # Make sure we have the PATH set for this session
+#     export PATH="$INSTALL_DIR:$PATH"
+#     "$INSTALL_DIR/dotfiler" config
+# else
+#     echo "⚠ Could not run dotfiler config automatically"
+#     echo "Please run 'dotfiler config' to complete setup"
+# fi
 
 echo ""
 echo "Key features:"
