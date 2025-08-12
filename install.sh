@@ -56,7 +56,7 @@ echo "✓ Installed dotfiler executable to: $INSTALL_DIR/dotfiler"
 echo "✓ Installed dotfiler_lib to: $INSTALL_DIR/dotfiler_lib/"
 
 # Get hash of latest commit for update tracking
-DOTFILER_HASH_FILE="$HOME/.local/.dotfiler_ng_last_hash"
+DOTFILER_HASH_FILE="$HOME/.local/.dotfiler_last_hash"
 if command -v curl >/dev/null 2>&1; then
     DOTFILER_CURRENT_HASH=$(curl -s https://api.github.com/repos/johnvilsack/dotfiler/commits/HEAD | grep '"sha"' | head -1 | cut -d'"' -f4 2>/dev/null || echo "unknown")
     echo "$DOTFILER_CURRENT_HASH" > "$DOTFILER_HASH_FILE"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dotfiler-ng - Simple dotfiles management with rsync
+# dotfiler - Simple dotfiles management with rsync
 # Compatible with bash 3.2+ (macOS default)
 
 # Program info
@@ -26,7 +26,7 @@ init_config
 # Show help
 show_help() {
     cat << EOF
-dotfiler-ng v$VERSION - Simple dotfiles management with rsync
+dotfiler v$VERSION - Simple dotfiles management with rsync
 
 Usage: $PROGRAM_NAME <command> [arguments]
 
