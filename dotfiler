@@ -6,16 +6,9 @@
 PROGRAM_NAME="dotfiler"
 VERSION="5.0.0"
 
-# Find library directory
-if [[ -L "$0" ]]; then
-    # Follow symlink
-    SCRIPT_PATH="$(readlink "$0")"
-    LIB_DIR="$(dirname "$SCRIPT_PATH")/dotfiler_lib"
-else
-    # Direct execution
-    SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
-    LIB_DIR="$(dirname "$SCRIPT_PATH")/dotfiler_lib"
-fi
+# Find library directory - get absolute path of script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$SCRIPT_DIR/dotfiler_lib"
 
 # Source library files
 source "$LIB_DIR/common.sh"
